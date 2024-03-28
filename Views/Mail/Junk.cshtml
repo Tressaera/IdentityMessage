@@ -1,0 +1,139 @@
+﻿@using System.Text.RegularExpressions
+
+@model MailViewModel
+
+@{
+    ViewData["Title"] = "Junk";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="content-wrapper ">
+    <section class="content mt-4 m-2">
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">Spam (@Model.TotalMails)</h3>
+
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" placeholder="Mesaj Ara">
+                                <div class="input-group-append">
+                                    <div class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.card-tools -->
+                    </div>
+                    <!-- /.card-header -->
+                    @if (!Model.Mails.Any())
+                    {
+
+                        <div class="container mt-5">
+
+                            <hr class="" />
+                            <br />
+                            <h6 class="text-center font-weight-bold text-primary">
+                                Spam mailiniz yok.
+                                <br />
+                                Spam mailler önemsiz olarak işaretledğiniz e-postalarınızı kaydedip sakladığınız yerdir.
+                            </h6>
+                            <br />
+                            <br />
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="card-body p-0">
+                            <div class="mailbox-controls  d-flex justify-content-between">
+                                <!-- /.btn-group -->
+                                <div class="icheck-primary float-left ml-3 mr-1" width="50px">
+                                    <input type="checkbox" value="" id="checkall">
+                                    <label for="checkall"></label>
+                                </div>
+                                <div class="text-center">
+                                    <a href="/Mail/DeleteAllMail" class="btn btn-default btn-sm bg-danger ml-3">
+                                        Spam Kutusunu Boşalt
+                                    </a>
+                                    &nbsp; &nbsp;
+                                    <span class="mailbox-read-time">Spam Kutusu'ndaki iletiler 30 günün sonunda otomatik olarak silinir. </span>
+                                </div>
+
+                                <div class="float-right">
+                                    @Model.PageInfo.CurrentPage - @Model.PageInfo.ItemsPerPage / @Model.PageInfo.TotalPages()
+                                    <div class="btn-group">
+                                        @if (Model.PageInfo.CurrentPage > 1)
+                                        {
+                                            <a href="/Mail/Important/?page=@(Model.PageInfo.CurrentPage-1)" class="btn btn-default btn-sm"><i class="fas fa-chevron-left"></i> </a>
+                                        }
+                                        @if (Model.PageInfo.CurrentPage < Model.PageInfo.TotalPages())
+                                        {
+                                            <a href="/Mail/Important/?page=@(Model.PageInfo.CurrentPage+1)" class="btn btn-default btn-sm">><i class="fa fa-chevron-right"></i></a>
+                                        }
+                                    </div>
+                                    <!-- /.btn-group -->
+                                </div>
+                                <!-- /.float-right -->
+                            </div>
+                            <div class="table-responsive mailbox-messages">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        @foreach (var item in Model.Mails)
+                                        {
+                                            <tr style="background-color:aliceblue">
+                                                <td width="50px">
+                                                    <div class="icheck-primary">
+                                                        <input type="checkbox" value="" id="@item.MailId">
+                                                        <label for="@item.MailId"></label>
+                                                    </div>
+                                                </td>
+                                                <td class="mailbox-read-time align-middle" width="200px"><a href="read-mail.html" style="color: inherit;"> <span class=""><i class="fi fi-sr-exclamation text-secondary"></i></span> &nbsp;@item.AppUser.Email</a></td>
+                                                <td class="align-middle" width="1500px">
+                                                    <a href="/Mail/MailDetail/@item.MailId" style="color: inherit;"> @item.MailSubject </a>
+                                                    -
+                                                    @if (item.MailContent is null || item.MailContent.Length < 200)
+                                                    {
+                                                        Func<string, string> RemoveHtmlTags = (input) =>
+                                                        {
+                                                            if (string.IsNullOrEmpty(input))
+                                                                return input;
+
+                                                            var regex = new Regex("<.*?>");
+                                                            return regex.Replace(input, "");
+                                                        };
+                                                        <a class="mailbox-read-time" href="/Mail/MailDetail/@item.MailId" style="color: inherit;"> @RemoveHtmlTags(item.MailContent) </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        var last = item.MailContent.Substring(0, 200).LastIndexOf(" ");
+                                                        Func<string, string> RemoveHtmlTags = (input) =>
+                                                        {
+                                                            if (string.IsNullOrEmpty(input))
+                                                                return input;
+
+                                                            var regex = new Regex("<.*?>");
+                                                            return regex.Replace(input, "");
+                                                        };
+                                                        <a class="mailbox-read-time" href="/Mail/MailDetail/@item.MailId" style="color: inherit;"> @RemoveHtmlTags(item.MailContent.Substring(0, last))... </a>
+                                                    }
+                                                </td>
+                                                <td class="mailbox-read-time font-weight-bold align-middle" width="300px">@item.MailDate.ToString("dddd, dd MMMM yyyy") -  @item.MailTime.ToString("hh\\:mm")</td>
+                                                <td width="50px"><a href="/Mail/MakeTrash/@item.MailId?redirectAction=Index"><i class="fa fa-trash text-danger"></i></a></td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,81 @@
+﻿@model PasswordChangeViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profil</h1>
+                </div>
+
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Widget: user widget style 1 -->
+                    <div class="card card-widget widget-user">
+                        <!-- Add the bg color to the header using any of the bg-* classes -->
+                        @await Component.InvokeAsync("_ProfilePartial")
+
+                    </div>
+                    <!-- /.widget-user -->
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item"><a class="nav-link" href="#passwordChange" data-toggle="tab">Şifre Ayarları</a></li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="passwordChange">
+                                    <form method="post" asp-controller="Profile" asp-action="Index" role="form text-left">
+                                        <div class="mb-3">
+                                            <input type="password" asp-for="OldPassword" class="form-control mb-2" placeholder="Eski Şifre" aria-label="Eski Şifre">
+                                        </div>
+                                        <div class="mb-3">
+                                            <input type="password" asp-for="NewPassword" class="form-control mb-2" placeholder="Yeni Şifre" aria-label="Yeni Şifre">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <input type="password" asp-for="NewPasswordConfirm" class="form-control mb-2" placeholder="Yeni Şifre Tekrar" aria-label="Yeni şifre tekrar">
+                                            <span asp-validation-for="NewPassword" class="text-danger"> </span>
+                                            <span asp-validation-for="NewPasswordConfirm" class="text-danger"> </span>
+                                        </div>
+                                        <div class="text-dark bg-danger" asp-validation-summary="ModelOnly"> </div>
+                                        @if (TempData["PasswordChange"] != null)
+                                        {
+                                            <div class="alert alert-success font-weight-bold mt-3 text-xs">
+                                                @TempData["PasswordChange"]
+                                            </div>
+                                        }
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn bg-gradient-primary float-start my-4 mb-2">Şifre Değiştir</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
